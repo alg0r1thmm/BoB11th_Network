@@ -1,13 +1,13 @@
-# add-nho
+# add-nbo
 
-Best of the Best 11th Task[Add-nho]
+Best of the Best 11th Task[Add-nbo]
 
-syntax : add-nbo <file1> <file2>
-sample : add-nbo a.bin c.bin
+#Example
 
-# example
-$ echo -n -e \\x00\\x00\\x03\\xe8 > thousand.bin
-$ echo -n -e \\x00\\x00\\x01\\xf4 > five-hundred.bin
-$ ./add-nbo thousand.bin five-hundred.bin
-1000(0x3e8) + 500(0x1f4) = 1500(0x5dc)
-
+$ git clone https://github.com/alg0r1thmm/add-nbo/tree/main.git  
+  
+$ cd add-nbo  
+  
+$ make  
+  
+$ ./add-nbo
