@@ -2,12 +2,14 @@
 
 Best of the Best 11th Task[Add-nbo]
 
-#Example
+# Example
 
-$ git clone https://github.com/alg0r1thmm/add-nbo/tree/main.git  
+```
+$ git clone https://github.com/alg0r1thmm/add-nbo.git  
   
 $ cd add-nbo  
   
 $ make  
   
 $ ./add-nbo
+```
