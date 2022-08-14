@@ -169,7 +169,7 @@ int main(int argc, char* argv[]) {
 		}
 		
 		// void* memcpy (void* dest, const void* source, size_t num)
-		// 길이 비교를 통해서 올바른 값인지 아닌지 체크
+		// 비교를 통해 목적지가 정확한지 아닌지 확인
 		if(memcpy(&Reply_Ether, ether_length, sizeof(EthHdr)) == NULL){
 			printf("헤더 정보를 읽어올 수 없습니다.\n");
 			return -1;
