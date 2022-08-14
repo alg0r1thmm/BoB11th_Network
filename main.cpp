@@ -42,7 +42,7 @@ bool get_MyMac(char* MacAddr,const char *if_config)
 		close(sockfd);
 		exit(1);
 	}
-
+	
 	memcpy(m_MAC_func, ifr.ifr_addr.sa_data, 6);
 	sprintf(MacAddr, "%02x:%02x:%02x:%02x:%02x:%02x", m_MAC_func[0], m_MAC_func[1], m_MAC_func[2], m_MAC_func[3], m_MAC_func[4], m_MAC_func[5]);
 
@@ -164,7 +164,8 @@ int main(int argc, char* argv[]) {
 			printf("pcap_next_ex return %d(%s)\n", res, pcap_geterr(handle));
 			break;
 		}
-
+		
+		// void* memcpy (void* dest, const void* source, size_t num)
 		if(memcpy(&Reply_Ether, ether_length, sizeof(EthHdr)) == NULL){
 			printf("헤더 정보를 읽어올 수 없습니다.\n");
 			return -1;
@@ -174,7 +175,6 @@ int main(int argc, char* argv[]) {
 			printf("헤더 정보를 읽어올 수 없습니다.\n");
 			return -1;
 		}
-
 
 		if(Reply_Ether.type() != EthHdr::Arp){
 			if(Reply_Ether.dmac().operator!=(Mac(m_MAC))){
@@ -190,8 +190,10 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
+		//Target IP, Sender Mac 을 저장
+		// int sprintf(char * const _Buffer, char const * const _Format, ...);
 		sprintf(s_MAC,"%s",((std::string)Reply_Ether.smac()).c_str());
-		
+
 		break;
 	}
 
