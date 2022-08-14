@@ -151,11 +151,14 @@ int main(int argc, char* argv[]) {
 	while(1)
 	{
 		printf("패킷 전송을 위해 Victim Mac Address 를 얻어옵니다 . . . \n");
+		// Ethernet, ARP 정보를 받아올 구조체 및 포인터 선언
 		const u_char* packet;
 		struct pcap_pkthdr* header;
 		res = pcap_next_ex(handle, &header, &packet);
 		EthHdr Reply_Ether;
 		ArpHdr Reply_ARP;
+		// ether_lenghth : ether packet 길이
+		// arp_length : ether packet + ether header 길이
 		u_char* ether_length = (u_char*)packet;
 		u_char* arp_length = ether_length + sizeof(EthHdr);
 
@@ -166,6 +169,7 @@ int main(int argc, char* argv[]) {
 		}
 		
 		// void* memcpy (void* dest, const void* source, size_t num)
+		// 길이 비교를 통해서 올바른 값인지 아닌지 체크
 		if(memcpy(&Reply_Ether, ether_length, sizeof(EthHdr)) == NULL){
 			printf("헤더 정보를 읽어올 수 없습니다.\n");
 			return -1;
