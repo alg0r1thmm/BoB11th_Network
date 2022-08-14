@@ -193,9 +193,10 @@ int main(int argc, char* argv[]) {
 
 		//Target IP, Sender Mac 을 저장
 		// int sprintf(char * const _Buffer, char const * const _Format, ...);
-		sprintf(s_MAC,"%s",((std::string)Reply_Ether.smac()).c_str());
-
-		break;
+		else{
+			sprintf(s_MAC,"%s",((std::string)Reply_Ether.smac()).c_str());
+			break;
+		}
 	}
 
 	EthArpPacket arp_packet;
