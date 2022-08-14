@@ -182,18 +182,16 @@ int main(int argc, char* argv[]) {
 
 		if(Reply_Ether.type() != EthHdr::Arp){
 			if(Reply_Ether.dmac().operator!=(Mac(m_MAC))){
+				if(Reply_ARP.op() != ArpHdr::Reply){
+					if(Reply_ARP.tmac_.operator!=(Mac(m_MAC))){   
+						if(!Reply_ARP.tip().operator==(Ip(m_IP))){
 				continue;
-			}
-		}
-		
-		if(Reply_ARP.op() != ArpHdr::Reply){
-			if(Reply_ARP.tmac_.operator!=(Mac(m_MAC))){   
-				if(!Reply_ARP.tip().operator==(Ip(m_IP))){
-					continue;
+						}
+					}
 				}
 			}
 		}
-
+		
 		//Target IP, Sender Mac 을 저장
 		// int sprintf(char * const _Buffer, char const * const _Format, ...);
 		sprintf(s_MAC,"%s",((std::string)Reply_Ether.smac()).c_str());
