@@ -73,6 +73,13 @@ bool get_myIP(char* myip, const char *if_config)
 }
 
 int main(int argc, char* argv[]) {
+	//Mac, IP 에 대한 정보 배열 값 선언
+	char m_MAC[20];
+	char s_MAC[20];
+	char m_IP[20];
+	char* s_IP = argv[2];
+	char* t_IP = argv[3];
+
 	/* argv[0] : ./send-arp-test
 	   argv[1] : interface
 	   argv[2] : sendIP
@@ -91,13 +98,6 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, "couldn't open device %s(%s)\n", dev, errbuf);
 		return -1;
 	}
-
-	//Mac, IP 에 대한 정보 배열 값 선언
-	char m_MAC[20];
-	char s_MAC[20];
-	char m_IP[20];
-	char* s_IP = argv[2];
-	char* t_IP = argv[3];
 
 	//각 함수 값이 올바르게 들어오지 않은 경우 종료
 	if(!get_MyMac(m_MAC, dev)){
