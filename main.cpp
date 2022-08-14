@@ -1,11 +1,9 @@
 #include <arpa/inet.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
-#include <string.h>
 #include <unistd.h>
 #include <cstdio>
 #include <pcap.h>
-#include "mac.h"
 #include "ethhdr.h"
 #include "arphdr.h"
 
@@ -65,7 +63,7 @@ bool get_myIP(char* myip, const char *if_config)
 	strncpy(ifr.ifr_name, if_config, IFNAMSIZ);
 
 	if (ioctl(s, SIOCGIFADDR, &ifr) < 0) {
-		printf("Error");
+		printf("에러");
 	} 
 	else {
 		inet_ntop(AF_INET, ifr.ifr_addr.sa_data+2, myip,sizeof(struct sockaddr));
@@ -156,6 +154,10 @@ int main(int argc, char* argv[]) {
 		const u_char* packet;
 		struct pcap_pkthdr* header;
 		res = pcap_next_ex(handle, &header, &packet);
+		EthHdr Reply_Ether;
+        ArpHdr Reply_ARP;
+        u_char* ether_length = (u_char*)packet;
+        u_char* arp_length = ether_length + sizeof(EthHdr);
 
 		if (res == 0) continue;
 		if (res == PCAP_ERROR || res == PCAP_ERROR_BREAK) {
@@ -163,15 +165,16 @@ int main(int argc, char* argv[]) {
 			break;
 		}
 
-		EthHdr Reply_Ether;
-        ArpHdr Reply_ARP;
-        u_char* ether_length = (u_char*)packet;
-        u_char* arp_length = ether_length + sizeof(EthHdr);
-		
 		if(memcpy(&Reply_Ether, ether_length, sizeof(EthHdr)) == NULL){
 			printf("헤더 정보를 읽어올 수 없습니다.\n");
 			return -1;
 		}
+
+		if(memcpy(&Reply_ARP, arp_length, sizeof(ArpHdr)) == NULL){
+			printf("헤더 정보를 읽어올 수 없습니다.\n");
+			return -1;
+		}
+
 
 		if(Reply_Ether.type() != EthHdr::Arp){
             if(Reply_Ether.dmac().operator!=(Mac(m_MAC))){
@@ -179,11 +182,6 @@ int main(int argc, char* argv[]) {
             }
         }
 		
-		if(memcpy(&Reply_ARP, arp_length, sizeof(ArpHdr)) == NULL){
-			printf("헤더 정보를 읽어올 수 없습니다.\n");
-			return -1;
-		}
-
 		if(Reply_ARP.op() != ArpHdr::Reply){
             if(Reply_ARP.tmac_.operator!=(Mac(m_MAC))){   
                 if(!Reply_ARP.tip().operator==(Ip(m_IP))){
