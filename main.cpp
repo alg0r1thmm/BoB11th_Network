@@ -155,9 +155,9 @@ int main(int argc, char* argv[]) {
 		struct pcap_pkthdr* header;
 		res = pcap_next_ex(handle, &header, &packet);
 		EthHdr Reply_Ether;
-        ArpHdr Reply_ARP;
-        u_char* ether_length = (u_char*)packet;
-        u_char* arp_length = ether_length + sizeof(EthHdr);
+		ArpHdr Reply_ARP;
+		u_char* ether_length = (u_char*)packet;
+		u_char* arp_length = ether_length + sizeof(EthHdr);
 
 		if (res == 0) continue;
 		if (res == PCAP_ERROR || res == PCAP_ERROR_BREAK) {
@@ -177,20 +177,21 @@ int main(int argc, char* argv[]) {
 
 
 		if(Reply_Ether.type() != EthHdr::Arp){
-            if(Reply_Ether.dmac().operator!=(Mac(m_MAC))){
-                continue;
-            }
-        }
+			if(Reply_Ether.dmac().operator!=(Mac(m_MAC))){
+				continue;
+			}
+		}
 		
 		if(Reply_ARP.op() != ArpHdr::Reply){
-            if(Reply_ARP.tmac_.operator!=(Mac(m_MAC))){   
-                if(!Reply_ARP.tip().operator==(Ip(m_IP))){
-			        continue;
-                }
-            }
-        }
+			if(Reply_ARP.tmac_.operator!=(Mac(m_MAC))){   
+				if(!Reply_ARP.tip().operator==(Ip(m_IP))){
+					continue;
+				}
+			}
+		}
 
 		sprintf(s_MAC,"%s",((std::string)Reply_Ether.smac()).c_str());
+		
 		break;
 	}
 
