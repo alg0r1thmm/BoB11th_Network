@@ -125,7 +125,6 @@ int main(int argc, char* argv[]) {
         u_char* p = (u_char*)packet;
         u_char* ether_length = p + sizeof(EthHdr);
 		if(memcpy(&re_Ether, p, sizeof(EthHdr)) == NULL){
-			printf("Can't Ether Header Packet Data copy");
 			return -1;
 		}
 
@@ -136,7 +135,6 @@ int main(int argc, char* argv[]) {
         }
 		
 		if(memcpy(&re_Arp, ether_length, sizeof(ArpHdr)) == NULL){
-			printf("Can't Ether Header Packet Data copy");
 			return -1;
 		}
 
