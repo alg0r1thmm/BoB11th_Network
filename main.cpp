@@ -148,8 +148,7 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(handle));
 	}
 
-	while(1)
-	{
+	while(1){
 		printf("패킷 전송을 위해 Victim Mac Address 를 얻어옵니다 . . . \n");
 		// Ethernet, ARP 정보를 받아올 구조체 및 포인터 선언
 		const u_char* packet;
