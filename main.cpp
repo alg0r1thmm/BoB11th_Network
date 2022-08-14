@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
 	//Mac, IP 에 대한 정보 배열 값 선언
 	char m_MAC[20];
 	char s_MAC[20];
-    char m_IP[20];
+	char m_IP[20];
 	char* s_IP = argv[2];
 	char* t_IP = argv[3];
 
